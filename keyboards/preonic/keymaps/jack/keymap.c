@@ -28,15 +28,14 @@ enum preonic_layers {
 };
 
 enum preonic_keycodes {
-  BACKLIT = SAFE_RANGE,
-  KC_P000,
+  KC_P000 = SAFE_RANGE,
   MFG,
   JFM
 };
 
 #define QWERTY DF(_QWERTY)
-#define COLEMAK TG(_COLEMAK)
-#define DVORAK TG(_DVORAK)
+#define COLEMAK DF(_COLEMAK)
+#define DVORAK DF(_DVORAK)
 #define GAME TG(_GAME)
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
@@ -61,7 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,
   KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_SFTENT,
-  KC_LCTL, KC_LGUI, KC_LEAD, KC_LALT, LOWER,   KC_SPC,  KC_BSPC, RAISE,   KC_RALT, KC_APP,  KC_RGUI, KC_RCTL
+  KC_LCTL, KC_LGUI, KC_LOCK, KC_LALT, LOWER,   KC_SPC,  KC_BSPC, RAISE,   KC_RALT, KC_APP,  KC_RGUI, KC_RCTL
 ),
 
 /* Colemak
@@ -145,7 +144,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_NUBS, KC_WBAK, KC_UP,   KC_WFWD, KC_INS,  KC_HOME, KC_PGUP, _______, KC_P7,   KC_P8,   KC_P9,   KC_PPLS,
   KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,  KC_END,  KC_PGDN, _______, KC_P4,   KC_P5,   KC_P6,   KC_CALC,
   _______, KC_VOLD, KC_MUTE, KC_VOLU, KC_MPRV, KC_MPLY, KC_MNXT, KC_MSTP, KC_P1,   KC_P2,   KC_P3,   KC_PENT,
-  _______, _______, KC_LOCK, _______, _______, _______, _______, _______, KC_P0,   KC_P000, KC_PDOT, KC_PCMM
+  _______, _______, _______, _______, _______, _______, _______, _______, KC_P0,   KC_P000, KC_PDOT, KC_PCMM
 ),
 
 /* Raise
@@ -186,7 +185,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
   KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,
   RESET,   DEBUG,   MU_MOD,  AU_TOG,  _______, _______, _______, QWERTY,  COLEMAK, DVORAK,  GAME,    _______,
-  _______, MUV_DE,  MUV_IN,  MU_TOG,  _______, MI_ON,   MI_OFF,  TERM_ON, TERM_OFF,_______, _______, _______,
+  _______, MUV_DE,  MUV_IN,  MU_TOG,  _______, MI_ON,   MI_OFF,  TERM_ON, TERM_OFF,CMB_ON,  CMB_OFF, _______,
   _______, _______, _______, _______, _______, KC_PWR,  KC_SLEP, _______, _______, _______, _______, _______
 )
 
@@ -199,48 +198,103 @@ uint32_t layer_state_set_user(uint32_t state) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-        case BACKLIT:
-          if (record->event.pressed) {
-            register_code(KC_RSFT);
-            #ifdef BACKLIGHT_ENABLE
-              backlight_step();
-            #endif
-            #ifdef __AVR__
-            PORTE &= ~(1<<6);
-            #endif
-          } else {
-            unregister_code(KC_RSFT);
-            #ifdef __AVR__
-            PORTE |= (1<<6);
-            #endif
-          }
-          return false;
-          break;
-        case KC_P000:
-          if (record->event.pressed) {
-            SEND_STRING("000");
-          }
-          return false;
-          break;
-        case MFG:
-          if (record->event.pressed) {
-            SEND_STRING("Mit freundlichen Gr\"u"SS_DOWN(X_RALT)"s"SS_UP(X_RALT)"en,\n");
-          }
-          return false;
-          break;
-        case JFM:
-          if (record->event.pressed) {
-            SEND_STRING("Jan-Frederick Musiol");
-          }
-          return false;
-          break;
-        // case KC_SPC:
-          // PLAY_SONG(GOODBYE_SOUND);
-          // return true;
-          // break;
+    case KC_P000:
+      if (record->event.pressed) {
+        SEND_STRING("000");
       }
-    return true;
+      return false;
+      break;
+    case MFG:
+      if (record->event.pressed) {
+        SEND_STRING("Mit freundlichen Gr\"u"SS_DOWN(X_RALT)"s"SS_UP(X_RALT)"en,\n");
+      }
+      return false;
+      break;
+    case JFM:
+      if (record->event.pressed) {
+        SEND_STRING("Jan-Frederick Musiol");
+      }
+      return false;
+      break;
+  }
+  return true;
 };
+
+enum combo_events {
+    COMBO_MFG,
+    COMBO_JFM,
+    COMBO_ATU,
+    COMBO_ANM,
+    COMBO_ACM,
+    COMBO_AFW,
+    COMBO_TEL,
+    COMBO_HND
+};
+
+const uint16_t PROGMEM mfg_combo[] = {KC_M, KC_F, KC_G, COMBO_END};
+const uint16_t PROGMEM jfm_combo[] = {KC_J, KC_F, KC_M, COMBO_END};
+const uint16_t PROGMEM atu_combo[] = {KC_A, KC_T, KC_U, COMBO_END};
+const uint16_t PROGMEM anm_combo[] = {KC_A, KC_N, KC_M, COMBO_END};
+const uint16_t PROGMEM acm_combo[] = {KC_A, KC_C, KC_M, COMBO_END};
+const uint16_t PROGMEM afw_combo[] = {KC_A, KC_F, KC_W, COMBO_END};
+const uint16_t PROGMEM tel_combo[] = {KC_T, KC_E, KC_L, COMBO_END};
+const uint16_t PROGMEM hnd_combo[] = {KC_H, KC_N, KC_D, COMBO_END};
+
+combo_t key_combos[COMBO_COUNT] = {
+    [COMBO_MFG] = COMBO_ACTION(mfg_combo),
+    [COMBO_JFM] = COMBO_ACTION(jfm_combo),
+    [COMBO_ATU] = COMBO_ACTION(atu_combo),
+    [COMBO_ANM] = COMBO_ACTION(anm_combo),
+    [COMBO_ACM] = COMBO_ACTION(acm_combo),
+    [COMBO_AFW] = COMBO_ACTION(afw_combo),
+    [COMBO_TEL] = COMBO_ACTION(tel_combo),
+    [COMBO_HND] = COMBO_ACTION(hnd_combo)
+};
+
+void process_combo_event(uint16_t combo_index, bool pressed) {
+  switch(combo_index) {
+    case COMBO_MFG:
+      if (pressed) {
+        SEND_STRING("Mit freundlichen Gr\"u"SS_DOWN(X_RALT)"s"SS_UP(X_RALT)"en,\nJan-Frederick Musiol");
+      }
+      break;
+    case COMBO_JFM:
+      if (pressed) {
+        SEND_STRING("Jan-Frederick Musiol");
+      }
+      break;
+    case COMBO_ATU:
+      if (pressed) {
+        SEND_STRING("j.musiol@tu-bs.de");
+      }
+      break;
+    case COMBO_ANM:
+      if (pressed) {
+        SEND_STRING("jan@musiol-bs.de");
+      }
+      break;
+    case COMBO_ACM:
+      if (pressed) {
+        SEND_STRING("jack@musiol-bs.de");
+      }
+      break;
+    case COMBO_AFW:
+      if (pressed) {
+        SEND_STRING("j.musiol@fw-bs.de");
+      }
+      break;
+    case COMBO_TEL:
+      if (pressed) {
+        SEND_STRING("0531 696104");
+      }
+      break;
+    case COMBO_HND:
+      if (pressed) {
+        SEND_STRING("0171 9700323");
+      }
+      break;
+  }
+}
 
 bool muse_mode = false;
 uint8_t last_muse_note = 0;
@@ -295,38 +349,7 @@ void dip_update(uint8_t index, bool active) {
    }
 }
 
-LEADER_EXTERNS();
-
 void matrix_scan_user(void) {
-  LEADER_DICTIONARY() {
-    leading = false;
-    leader_end();
-    
-    SEQ_THREE_KEYS(KC_M, KC_F, KC_G) {
-      SEND_STRING("Mit freundlichen Gr\"u"SS_DOWN(X_RALT)"s"SS_UP(X_RALT)"en,\n");
-    }
-    SEQ_THREE_KEYS(KC_J, KC_F, KC_M) {
-      SEND_STRING("Jan-Frederick Musiol");
-    }
-    SEQ_THREE_KEYS(KC_A, KC_T, KC_U) {
-      SEND_STRING("j.musiol@tu-bs.de");
-    }
-    SEQ_THREE_KEYS(KC_A, KC_N, KC_M) {
-      SEND_STRING("jan@musiol-bs.de");
-    }
-    SEQ_THREE_KEYS(KC_A, KC_C, KC_M) {
-      SEND_STRING("jack@musiol-bs.de");
-    }
-    SEQ_THREE_KEYS(KC_A, KC_F, KC_W) {
-      SEND_STRING("j.musiol@fw-bs.de");
-    }
-    SEQ_THREE_KEYS(KC_T, KC_E, KC_L) {
-      SEND_STRING("0531 696104");
-    }
-    SEQ_THREE_KEYS(KC_H, KC_N, KC_D) {
-      SEND_STRING("0171 9700323");
-    }
-  }
   #ifdef AUDIO_ENABLE
     if (muse_mode) {
       if (muse_counter == 0) {
