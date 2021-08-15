@@ -29,6 +29,7 @@ enum preonic_layers {
 
 enum preonic_keycodes {
   KC_P000 = SAFE_RANGE,
+  GAME,
   MFG,
   JFM
 };
@@ -36,9 +37,10 @@ enum preonic_keycodes {
 #define QWERTY DF(_QWERTY)
 #define COLEMAK DF(_COLEMAK)
 #define DVORAK DF(_DVORAK)
-#define GAME TG(_GAME)
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
+#define T_LOWER TG(_LOWER)
+#define T_RAISE TG(_RAISE)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -121,7 +123,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_GAME] = LAYOUT_preonic_grid( \
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,
   KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-  KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_SFTENT,
+  KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT,
   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,
   KC_LCTL, KC_NO,   KC_LOCK, KC_LALT, LOWER,   KC_SPC,  KC_BSPC, RAISE,   KC_RALT, KC_APP,  KC_RGUI, KC_RCTL
 ),
@@ -144,7 +146,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_NUBS, KC_WBAK, KC_UP,   KC_WFWD, KC_INS,  KC_HOME, KC_PGUP, _______, KC_P7,   KC_P8,   KC_P9,   KC_PPLS,
   KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,  KC_END,  KC_PGDN, _______, KC_P4,   KC_P5,   KC_P6,   KC_CALC,
   _______, KC_VOLD, KC_MUTE, KC_VOLU, KC_MPRV, KC_MPLY, KC_MNXT, KC_MSTP, KC_P1,   KC_P2,   KC_P3,   KC_PENT,
-  _______, _______, _______, _______, _______, _______, _______, _______, KC_P0,   KC_P000, KC_PDOT, KC_PCMM
+  _______, _______, _______, _______, _______, T_LOWER, _______, _______, KC_P0,   KC_P000, KC_PDOT, KC_PCMM
 ),
 
 /* Raise
@@ -165,7 +167,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, KC_BTN1, KC_MS_U, KC_BTN2, _______, _______, _______, _______, KC_BTN1, KC_WH_U, KC_BTN2, KC_RBRC,
   _______, KC_MS_L, KC_MS_D, KC_MS_R, MFG    , JFM    , _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, KC_BSLS,
   _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, _______, _______, _______, KC_BTN4, KC_BTN3, KC_BTN5, _______,
-  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+  _______, _______, _______, _______, _______, _______, T_RAISE, _______, _______, _______, _______, _______
 ),
 
 /* Adjust (Lower + Raise)
@@ -184,12 +186,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_ADJUST] = LAYOUT_preonic_grid( \
   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
   KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,
-  RESET,   DEBUG,   MU_MOD,  AU_TOG,  _______, _______, _______, QWERTY,  COLEMAK, DVORAK,  GAME,    _______,
-  _______, MUV_DE,  MUV_IN,  MU_TOG,  _______, MI_ON,   MI_OFF,  TERM_ON, TERM_OFF,CMB_ON,  CMB_OFF, _______,
-  _______, _______, _______, _______, _______, KC_PWR,  KC_SLEP, _______, _______, _______, _______, _______
+  RESET,   DEBUG,   MU_MOD,  AU_TOG,  _______, MI_ON,   MI_OFF,  QWERTY,  COLEMAK, DVORAK,  _______, _______,
+  _______, MUV_DE,  MUV_IN,  MU_TOG,  _______, KC_PWR,  KC_SLEP, _______, _______, _______, _______, _______,
+  _______, _______, _______, _______, _______, GAME,    CMB_TOG, _______, _______, _______, _______, _______
 )
 
 
+};
+
+void keyboard_post_init_user() {
+  combo_disable();
 };
 
 uint32_t layer_state_set_user(uint32_t state) {
@@ -204,9 +210,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+    case GAME:
+      if (record->event.pressed) {
+        layer_invert(_GAME);
+        if (IS_LAYER_ON(_GAME)) {
+          combo_disable();
+        }
+      }
+      return false;
+      break;
     case MFG:
       if (record->event.pressed) {
-        SEND_STRING("Mit freundlichen Gr\"u"SS_DOWN(X_RALT)"s"SS_UP(X_RALT)"en,\n");
+        SEND_STRING("Mit freundlichen Gr\"u"SS_DOWN(X_RALT)"s"SS_UP(X_RALT)"en,\nJan-Frederick Musiol");
       }
       return false;
       break;
