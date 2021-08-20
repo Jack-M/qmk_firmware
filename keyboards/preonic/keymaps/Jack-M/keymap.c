@@ -163,10 +163,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_preonic_grid( \
-  KC_TILD, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BSPC,
+  KC_TILD, KC_BTN4, KC_BTN3, KC_BTN5, _______, _______, _______, _______, KC_BTN4, KC_BTN3, KC_BTN5, KC_BSPC,
   _______, KC_BTN1, KC_MS_U, KC_BTN2, _______, _______, _______, _______, KC_BTN1, KC_WH_U, KC_BTN2, KC_RBRC,
   _______, KC_MS_L, KC_MS_D, KC_MS_R, MFG    , JFM    , _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, KC_BSLS,
-  _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, _______, _______, _______, KC_BTN4, KC_BTN3, KC_BTN5, _______,
+  _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, _______, _______, _______, KC_ACL0, KC_ACL1, KC_ACL2, _______,
   _______, _______, _______, _______, _______, _______, T_RAISE, _______, _______, _______, _______, _______
 ),
 
@@ -186,9 +186,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_ADJUST] = LAYOUT_preonic_grid( \
   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
   KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,
-  RESET,   DEBUG,   MU_MOD,  AU_TOG,  _______, MI_ON,   MI_OFF,  QWERTY,  COLEMAK, DVORAK,  _______, _______,
-  _______, MUV_DE,  MUV_IN,  MU_TOG,  _______, KC_PWR,  KC_SLEP, _______, _______, _______, _______, _______,
-  _______, _______, _______, _______, _______, GAME,    CMB_TOG, _______, _______, _______, _______, _______
+  RESET,   _______, MU_MOD,  AU_TOG,  _______, MI_ON,   MI_OFF,  QWERTY,  COLEMAK, DVORAK,  GAME,    DEBUG,
+  _______, MUV_DE,  MUV_IN,  MU_TOG,  _______, GAME,    CMB_TOG, _______, _______, _______, _______, _______,
+  _______, _______, _______, _______, _______, KC_PWR,  KC_SLEP, _______, _______, _______, _______, _______
 )
 
 
@@ -198,7 +198,7 @@ void keyboard_post_init_user() {
   combo_disable();
 };
 
-uint32_t layer_state_set_user(uint32_t state) {
+layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
@@ -209,7 +209,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         SEND_STRING("000");
       }
       return false;
-      break;
     case GAME:
       if (record->event.pressed) {
         layer_invert(_GAME);
@@ -218,21 +217,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       }
       return false;
-      break;
     case MFG:
       if (record->event.pressed) {
         SEND_STRING("Mit freundlichen Gr\"u"SS_DOWN(X_RALT)"s"SS_UP(X_RALT)"en,\nJan-Frederick Musiol");
       }
       return false;
-      break;
     case JFM:
       if (record->event.pressed) {
         SEND_STRING("Jan-Frederick Musiol");
       }
       return false;
-      break;
+    default:
+      return true;
   }
-  return true;
 };
 
 enum combo_events {
@@ -334,11 +331,17 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     }
   } else {
     if (clockwise) {
-      register_code(KC_PGDN);
-      unregister_code(KC_PGDN);
+      #ifdef MOUSEKEY_ENABLE
+        tap_code(KC_MS_WH_DOWN);
+      #else
+        tap_code(KC_PGDN);
+      #endif
     } else {
-      register_code(KC_PGUP);
-      unregister_code(KC_PGUP);
+      #ifdef MOUSEKEY_ENABLE
+        tap_code(KC_MS_WH_UP);
+      #else
+        tap_code(KC_PGUP);
+      #endif
     }
   }
     return true;

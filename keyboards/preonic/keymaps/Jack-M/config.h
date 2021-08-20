@@ -38,7 +38,8 @@
 
 #define TAPPING_TOGGLE 2
 
-#define MK_3_SPEEDuu
+#define MK_3_SPEED
+#define MK_MOMENTARY_ACCEL
 #define MK_C_OFFSET_UNMOD 16
 #define MK_C_INTERVAL_UNMOD 16
 #define MK_C_OFFSET_0 1
