@@ -31,7 +31,15 @@ enum preonic_keycodes {
     KC_P000 = SAFE_RANGE,
     GAME,
     MFG,
-    JFM
+    JFM,
+    SONG1,
+    SONG2,
+    SONG3,
+    SONG4,
+    SONG5,
+    SONG6,
+    SONG7,
+    SONG8
 };
 
 #define QWERTY DF(_QWERTY)
@@ -41,6 +49,17 @@ enum preonic_keycodes {
 #define RAISE MO(_RAISE)
 #define T_LOWER TG(_LOWER)
 #define T_RAISE TG(_RAISE)
+
+#ifdef AUDIO_ENABLE
+float song1[][2] = SONG(COIN_SOUND);
+float song2[][2] = SONG(ONE_UP_SOUND);
+float song3[][2] = SONG(SONIC_RING);
+float song4[][2] = SONG(ZELDA_PUZZLE);
+float song5[][2] = SONG(ZELDA_TREASURE);
+float song6[][2] = SONG(MARIO_THEME);
+float song7[][2] = SONG(MARIO_GAMEOVER);
+float song8[][2] = SONG(MARIO_MUSHROOM);
+#endif
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Qwerty
@@ -61,7 +80,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_SFTENT,
-        KC_LCTL, KC_LGUI, KC_LOCK, KC_LALT, LOWER,   KC_SPC,  KC_BSPC, RAISE,   KC_RALT, KC_APP,  KC_RGUI, KC_RCTL
+        KC_LCTL, KC_LOCK, KC_LGUI, KC_LALT, LOWER,   KC_SPC,  KC_BSPC, RAISE,   KC_RALT, KC_RGUI, KC_APP,  KC_RCTL
     ),
 
     /* Colemak
@@ -124,7 +143,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT,
         KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,
-        KC_LCTL, KC_NO,   KC_LOCK, KC_LALT, LOWER,   KC_SPC,  KC_BSPC, RAISE,   KC_RALT, KC_APP,  KC_RGUI, KC_RCTL
+        KC_LCTL, KC_LOCK, KC_NO,   KC_LALT, LOWER,   KC_SPC,  KC_BSPC, RAISE,   KC_RALT, KC_RGUI, KC_APP,  KC_RCTL
     ),
 
     /* Lower
@@ -162,10 +181,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * `-----------------------------------------------------------------------------------'
      */
     [_RAISE] = LAYOUT_preonic_grid(
-        KC_TILD, KC_BTN4, KC_BTN3, KC_BTN5, _______, _______, _______, _______, KC_BTN4, KC_BTN3, KC_BTN5, KC_BSPC,
-        _______, KC_BTN1, KC_MS_U, KC_BTN2, _______, _______, _______, _______, KC_BTN1, KC_WH_U, KC_BTN2, KC_RBRC,
-        _______, KC_MS_L, KC_MS_D, KC_MS_R, MFG    , JFM    , _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, KC_BSLS,
-        _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, _______, _______, _______, KC_ACL0, KC_ACL1, KC_ACL2, _______,
+        KC_TILD, KC_BTN4, KC_BTN3, KC_BTN5, SONG1,   SONG2,   SONG3,   SONG4,   KC_BTN4, KC_BTN3, KC_BTN5, KC_BSPC,
+        _______, KC_BTN1, KC_MS_U, KC_BTN2, SONG5,   SONG6,   SONG7,   SONG8,   KC_BTN1, KC_WH_U, KC_BTN2, KC_RBRC,
+        _______, KC_MS_L, KC_MS_D, KC_MS_R, MFG,     JFM,     _______, _______, KC_WH_L, KC_WH_D, KC_WH_R, KC_BSLS,
+        _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, _______, _______, _______, KC_ACL0, KC_ACL1, KC_ACL2, KC_ENT,
         _______, _______, _______, _______, _______, _______, T_RAISE, _______, _______, _______, _______, _______
     ),
 
@@ -224,6 +243,48 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING("Jan-Frederick Musiol");
             }
             return false;
+#ifdef AUDIO_ENABLE
+        case SONG1:
+            if (record->event.pressed) {
+                PLAY_SONG(song1);
+            }
+            return false;
+        case SONG2:
+            if (record->event.pressed) {
+                PLAY_SONG(song2);
+            }
+            return false;
+        case SONG3:
+            if (record->event.pressed) {
+                PLAY_SONG(song3);
+            }
+            return false;
+        case SONG4:
+            if (record->event.pressed) {
+                PLAY_SONG(song4);
+            }
+            return false;
+        case SONG5:
+            if (record->event.pressed) {
+                PLAY_SONG(song5);
+            }
+            return false;
+        case SONG6:
+            if (record->event.pressed) {
+                PLAY_SONG(song6);
+            }
+            return false;
+        case SONG7:
+            if (record->event.pressed) {
+                PLAY_SONG(song7);
+            }
+            return false;
+        case SONG8:
+            if (record->event.pressed) {
+                PLAY_SONG(song8);
+            }
+            return false;
+#endif
         default:
             return true;
     }
