@@ -315,8 +315,8 @@ bool process_record_quantum(keyrecord_t *record) {
                 } else {
                     print("DEBUG: disabled.\n");
                 }
-#endif
                 return false;
+#endif
             case EEPROM_RESET:
                 eeconfig_init();
                 return false;

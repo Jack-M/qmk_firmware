@@ -51,14 +51,14 @@ enum preonic_keycodes {
 #define T_RAISE TG(_RAISE)
 
 #ifdef AUDIO_ENABLE
-float song1[][2] = SONG(COIN_SOUND);
-float song2[][2] = SONG(ONE_UP_SOUND);
-float song3[][2] = SONG(SONIC_RING);
-float song4[][2] = SONG(ZELDA_PUZZLE);
-float song5[][2] = SONG(ZELDA_TREASURE);
-float song6[][2] = SONG(MARIO_THEME);
-float song7[][2] = SONG(MARIO_GAMEOVER);
-float song8[][2] = SONG(MARIO_MUSHROOM);
+float song1[][2] = SONG(E1M1_DOOM);
+float song2[][2] = SONG(DISNEY_SONG);
+float song3[][2] = SONG(NUMBER_ONE);
+float song4[][2] = SONG(CABBAGE_SONG);
+float song5[][2] = SONG(OLD_SPICE);
+float song6[][2] = SONG(VICTORY_FANFARE_SHORT);
+float song7[][2] = SONG(RICK_ROLL);
+float song8[][2] = SONG(TO_BOLDLY_GO);
 #endif
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -211,11 +211,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void keyboard_post_init_user() {
-  combo_disable();
+    combo_disable();
 };
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+    return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
